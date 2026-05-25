@@ -78,7 +78,7 @@ AI-Management-System/
 ### Deployment Steps
 
 1. Download CanMV-K230 firmware image from Baidu Pan and flash to an SD card
-2. Copy `mp_deployment_source/` to the SD card root
+2. Copy `mp_deployment_source/` to the SD card root (this folder must be obtained from the Kendryte training platform via the "Model Training" steps below, or download `test2.zip` from the [Release](https://github.com/w4ysonch/AI-Management-System/releases) page and extract it)
 3. Copy `src/main.py` and `src/i2c_ssd1306.py` to the SD card root
 4. Insert SD card and power on the board
 5. Open CanMV IDE K230, connect to device, paste `main.py` and run

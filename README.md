@@ -78,7 +78,7 @@ AI-Management-System/
 ### 部署步骤
 
 1. 从百度网盘下载 CanMV-K230 镜像，烧录到 SD 卡
-2. 将 `mp_deployment_source/` 文件夹复制到 SD 卡根目录
+2. 将 `mp_deployment_source/` 文件夹复制到 SD 卡根目录（该文件夹需通过下方「模型训练」步骤从 Kendryte 平台获取，或在 [Release](https://github.com/w4ysonch/AI-Management-System/releases) 页面下载 `test2.zip` 解压得到）
 3. 将 `src/main.py` 和 `src/i2c_ssd1306.py` 复制到 SD 卡根目录
 4. 插入 SD 卡，开发板上电
 5. 打开 CanMV IDE K230，连接设备，粘贴 `main.py` 代码并运行
