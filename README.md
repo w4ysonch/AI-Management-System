@@ -38,6 +38,7 @@ main.py
 └── 主系统集成            # 主循环调度 + 异常处理
 ```
 
+- **技术文档**: 详见 [TECHNICAL.md](docs/TECHNICAL.md) — 引脚映射、数据流、状态机、配置格式
 - **AI 模型**: 图像分类模型在 [Kendryte 训练网站](https://www.kendryte.com/zh/training/start) 训练，导出为 `.kmodel` 格式供 K230 KPU 运行
 - **推理框架**: nncase v2.9.0 runtime
 - **图像预处理**: AI2D 硬件加速缩放/格式转换
@@ -58,6 +59,7 @@ AI-Management-System/
 │   ├── deploy_config.json       #   模型部署配置
 │   └── *.kmodel                 #   KPU 模型文件
 ├── docs/
+│   ├── TECHNICAL.md             #  技术参考文档（引脚映射、数据流、状态机）
 │   ├── 项目报告.pdf              #  竞赛报告
 │   └── release-notes/           #  版本发布说明
 └── test2.zip                     # 模型训练部署包（离线资源）
