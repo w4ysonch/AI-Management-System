@@ -68,13 +68,17 @@ AI-Management-System/
 ### 前置条件
 
 - **硬件**: RT-Thread Smart AI 套件（嘉楠 K230 开发板）
+  - [淘宝购买](https://e.tb.cn/h.SBGMFrRTHpvHlVG?tk=OTVafpM7qii)
+  - [开发板资料](https://www.kendryte.com/k230/zh/rtt/dev/index_rtt_only.html)
 - **固件**: CanMV-K230 MicroPython 镜像（nncase v2.9.0）
+  - [百度网盘下载](https://pan.baidu.com/s/1os9wadhNvpo3ZObLgbENFQ) 提取码: `rtth`
+  - 镜像文件: `CanMV-K230_DONGSHANPI_micropython_local_nncase_v2.9.0.img.gz`
 - **软件**: [CanMV IDE K230](https://www.kendryte.com/k230/)
 - **启动方式**: SD 卡启动（BOOT0=OFF, BOOT1=OFF）
 
 ### 部署步骤
 
-1. 下载并烧录 CanMV-K230 镜像到 SD 卡
+1. 从百度网盘下载 CanMV-K230 镜像，烧录到 SD 卡
 2. 将 `mp_deployment_source/` 文件夹复制到 SD 卡根目录
 3. 将 `src/main.py` 和 `src/i2c_ssd1306.py` 复制到 SD 卡根目录
 4. 插入 SD 卡，开发板上电

@@ -68,13 +68,17 @@ AI-Management-System/
 ### Prerequisites
 
 - **Hardware**: RT-Thread Smart AI Kit (Canaan K230 dev board)
+  - [Buy on Taobao](https://e.tb.cn/h.SBGMFrRTHpvHlVG?tk=OTVafpM7qii)
+  - [Board Documentation](https://www.kendryte.com/k230/zh/rtt/dev/index_rtt_only.html)
 - **Firmware**: CanMV-K230 MicroPython image (nncase v2.9.0)
+  - [Baidu Pan Download](https://pan.baidu.com/s/1os9wadhNvpo3ZObLgbENFQ) Password: `rtth`
+  - Image file: `CanMV-K230_DONGSHANPI_micropython_local_nncase_v2.9.0.img.gz`
 - **Software**: [CanMV IDE K230](https://www.kendryte.com/k230/)
 - **Boot Mode**: SD card boot (BOOT0=OFF, BOOT1=OFF)
 
 ### Deployment Steps
 
-1. Flash the CanMV-K230 firmware image to an SD card
+1. Download CanMV-K230 firmware image from Baidu Pan and flash to an SD card
 2. Copy `mp_deployment_source/` to the SD card root
 3. Copy `src/main.py` and `src/i2c_ssd1306.py` to the SD card root
 4. Insert SD card and power on the board
