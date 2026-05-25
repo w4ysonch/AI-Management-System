@@ -1,185 +1,187 @@
-# Technical Reference
+# 技术参考文档
 
-> Hardware pin mapping, data flow, state machine, and configuration format for the AI Management System.
+> AI 智能货架管理系统的硬件引脚映射、数据流、状态机和配置格式参考。
+
+**[English →](https://github.com/w4ysonch/AI-Management-System/blob/master/docs/TECHNICAL_EN.md)**
 
 ---
 
-## Hardware Pin Mapping
+## 硬件引脚映射
 
-### K230 FPIOA Pin Assignments
+### K230 FPIOA 引脚分配
 
-| GPIO | Function | Connected To | Direction | Notes |
-|------|----------|-------------|-----------|-------|
-| 44 | I2C SCL (Software) | SSD1306 OLED | Output | Software I2C via GPIO bit-bang |
-| 45 | I2C SDA (Software) | SSD1306 OLED | Bidir | Software I2C via GPIO bit-bang |
-| 28 | ROW1 | Matrix Keypad | Input (Pull-Down) | — |
-| 29 | ROW2 | Matrix Keypad | Input (Pull-Down) | — |
-| 30 | ROW3 | Matrix Keypad | Input (Pull-Down) | — |
-| 31 | ROW4 | Matrix Keypad | Input (Pull-Down) | — |
-| 18 | COL1 | Matrix Keypad | Output | Column scan driver |
-| 19 | COL2 | Matrix Keypad | Output | Column scan driver |
-| 33 | COL3 | Matrix Keypad | Output | Column scan driver |
-| 35 | COL4 | Matrix Keypad | Output | Column scan driver |
-| 42 | LED1 (Red) | Onboard LED | Output | Active HIGH, class1 indicator |
-| 6 | LED2 (Green) | Onboard LED | Output | Active HIGH, class2 indicator |
+| GPIO | 功能 | 连接外设 | 方向 | 备注 |
+|------|------|---------|------|------|
+| 44 | I2C SCL（软件） | SSD1306 OLED | 输出 | 软件 I2C GPIO 模拟 |
+| 45 | I2C SDA（软件） | SSD1306 OLED | 双向 | 软件 I2C GPIO 模拟 |
+| 28 | ROW1 | 矩阵按键 | 输入（下拉） | — |
+| 29 | ROW2 | 矩阵按键 | 输入（下拉） | — |
+| 30 | ROW3 | 矩阵按键 | 输入（下拉） | — |
+| 31 | ROW4 | 矩阵按键 | 输入（下拉） | — |
+| 18 | COL1 | 矩阵按键 | 输出 | 列扫描驱动 |
+| 19 | COL2 | 矩阵按键 | 输出 | 列扫描驱动 |
+| 33 | COL3 | 矩阵按键 | 输出 | 列扫描驱动 |
+| 35 | COL4 | 矩阵按键 | 输出 | 列扫描驱动 |
+| 42 | LED1（红） | 板载 LED | 输出 | 高电平有效，A 类指示 |
+| 6 | LED2（绿） | 板载 LED | 输出 | 高电平有效，B 类指示 |
 
-### I2C Bus
+### I2C 总线
 
-| Parameter | Value |
-|-----------|-------|
-| Mode | Software (bit-bang) |
-| Bus ID | `I2C(5)` |
+| 参数 | 值 |
+|------|-----|
+| 模式 | 软件模拟（bit-bang） |
+| 总线 ID | `I2C(5)` |
 | SCL | GPIO 44 |
 | SDA | GPIO 45 |
-| Frequency | 400 kHz |
-| Slave Device | SSD1306 @ `0x3C` |
+| 频率 | 400 kHz |
+| 从设备 | SSD1306 @ `0x3C` |
 
-### Camera & Display
+### 摄像头与显示器
 
-| Peripheral | Model | Interface | Channel | Resolution |
-|------------|-------|-----------|---------|------------|
-| Camera | OV5647 | MIPI CSI | CHN 0 (Display), CHN 2 (AI) | 640×360 (AI), 800×480 (LCD) |
-| LCD | ST7701 | RGB | — | 800×480 (default) |
-| LCD (alt) | LT9611 | HDMI | — | 1920×1080 |
+| 外设 | 型号 | 接口 | 通道 | 分辨率 |
+|------|------|------|------|--------|
+| 摄像头 | OV5647 | MIPI CSI | CHN 0（显示）, CHN 2（AI） | 640×360（AI）, 800×480（LCD） |
+| LCD | ST7701 | RGB | — | 800×480（默认） |
+| LCD（备选） | LT9611 | HDMI | — | 1920×1080 |
 
 ---
 
-## System Architecture
+## 系统架构
 
-### Data Flow
+### 数据流
 
 ```
-OV5647 Camera
+OV5647 摄像头
     │
-    ├─ CHN 0 (YUV) ──────────────────▶ Display Layer (VIDEO1) ──▶ LCD
+    ├─ CHN 0 (YUV) ──────────────────▶ 显示层 (VIDEO1) ──▶ LCD
     │
-    └─ CHN 2 (RGB888P) ──▶ AI2D Preprocess ──▶ KPU Inference
-                                                      │
-                                                      ▼
-                                              Post-process
-                                              (softmax / sigmoid)
-                                                      │
-                                              ┌───────┴───────┐
-                                              │               │
-                                              ▼               ▼
-                                         LED Control     LCD OSD (LAYER_OSD3)
-                                         (LED1 / LED2)   (result + confidence)
-                                              │
-                                              ▼
-                                         4×4 Keypad
-                                    (increment / reset)
-                                              │
-                                              ▼
-                                         SSD1306 OLED
-                                    ("A: [n]  B: [n]")
+    └─ CHN 2 (RGB888P) ──▶ AI2D 预处理 ──▶ KPU 推理
+                                                │
+                                                ▼
+                                          后处理
+                                        (softmax / sigmoid)
+                                                │
+                                         ┌──────┴──────┐
+                                         │              │
+                                         ▼              ▼
+                                     LED 控制      LCD OSD (LAYER_OSD3)
+                                   (LED1 / LED2)   (结果 + 置信度)
+                                         │
+                                         ▼
+                                    4×4 矩阵按键
+                                    (增加 / 清零)
+                                         │
+                                         ▼
+                                   SSD1306 OLED
+                                  ("A: [n]  B: [n]")
 ```
 
-### Module Interaction
+### 模块交互
 
 ```
-main() Main Loop
+main() 主循环
     │
     ├──▶ detect_key()           ──▶ update_oled_display()
     │        │
-    │        └── GPIO scan (COL output → ROW input)
-    │             50ms debounce via ticks_ms()
+    │        └── GPIO 扫描（列输出 → 行输入）
+    │             50ms 防抖 (ticks_ms())
     │
     ├──▶ sensor.snapshot(CHN_2) ──▶ ai2d_builder.run()
-    │                                    │
-    │                                    └── Resize: 640×360 → 224×224
-    │                                        NCHW_FMT, bilinear, half_pixel
+    │        │
+    │        └── 缩放: 640×360 → 224×224
+    │            NCHW_FMT, 双线性插值, half_pixel
     │
     ├──▶ kpu.run()              ──▶ softmax / sigmoid → cls_idx, score
     │
     ├──▶ control_leds(cls_idx)  ──▶ LED1.on() / LED2.on()
     │
-    └──▶ Display.show_image()   ──▶ OSD text overlay on LCD
+    └──▶ Display.show_image()   ──▶ LCD OSD 文字叠加
 ```
 
 ---
 
-## Module Details
+## 模块详解
 
-### 1. OLED Display (SSD1306 128×64)
+### 1. OLED 显示（SSD1306 128×64）
 
-**Protocol**: I2C, software bit-bang on GPIO 44/45.
+**协议**: I2C，GPIO 44/45 软件模拟。
 
-The driver communicates with SSD1306 via a command/data prefix byte:
-- `0x00` prefix → command byte follows
-- `0x40` prefix → data byte(s) follow
+驱动通过命令/数据前缀字节与 SSD1306 通信：
+- `0x00` 前缀 → 后续为命令字节
+- `0x40` 前缀 → 后续为数据字节
 
-**Initialization sequence** (refer to SSD1306 datasheet):
+**初始化序列**（参考 SSD1306 数据手册）：
 
-| Step | Command | Description |
-|------|---------|-------------|
-| 1 | `0xAE` | Display OFF |
-| 2 | `0xA8, 0x3F` | MUX ratio = 64 |
-| 3 | `0xD3, 0x00` | Display offset = 0 |
-| 4 | `0x40` | Start line = 0 |
-| 5 | `0xA1` | Segment re-map (normal) |
-| 6 | `0xC0` | COM scan direction (normal) |
-| 7 | `0xDA, 0x12` | COM pins config |
-| 8 | `0x81, 0x7F` | Contrast = max |
-| 9 | `0xA4` | Resume to RAM content |
-| 10 | `0xA6` | Normal (non-inverted) display |
-| 11 | `0xD5, 0x80` | Oscillator frequency |
-| 12 | `0x8D, 0x14` | Charge pump enable |
-| 13 | `0xAF` | Display ON |
+| 步骤 | 命令 | 说明 |
+|------|------|------|
+| 1 | `0xAE` | 关闭显示 |
+| 2 | `0xA8, 0x3F` | MUX 比例 = 64 |
+| 3 | `0xD3, 0x00` | 显示偏移 = 0 |
+| 4 | `0x40` | 起始行 = 0 |
+| 5 | `0xA1` | 段重映射（正常方向） |
+| 6 | `0xC0` | COM 扫描方向（正常） |
+| 7 | `0xDA, 0x12` | COM 引脚配置 |
+| 8 | `0x81, 0x7F` | 对比度 = 最大 |
+| 9 | `0xA4` | 恢复 RAM 内容显示 |
+| 10 | `0xA6` | 正常显示（非反色） |
+| 11 | `0xD5, 0x80` | 振荡器频率 |
+| 12 | `0x8D, 0x14` | 使能电荷泵 |
+| 13 | `0xAF` | 开启显示 |
 
-**Character rendering**: Uses an 8×8 bitmap font (`FONT_8x8`, 13 glyphs: `0-9`, `A`, `B`, `:`, Space). Each glyph is 8 bytes, one per row. `oled_show_text()` sets page + column address, then writes 8 data bytes per character. Display is organized as 8 pages × 128 columns.
+**字符渲染**: 使用 8×8 点阵字库（`FONT_8x8`，13 个字形：`0-9`、`A`、`B`、`:`、空格）。每个字形 8 字节，每字节对应一行像素。`oled_show_text()` 先设置页地址和列地址，再逐字符写入 8 字节数据。屏幕分为 8 页 × 128 列。
 
 **API**:
 
-| Function | Parameters | Description |
-|----------|-----------|-------------|
-| `oled_init()` | — | Send init sequence, turn display on |
-| `oled_clear()` | — | Write `0x00` to all 8×128 pixels |
-| `oled_show_text(text, page, start_col)` | `text: str`, `page: int (0-7)`, `start_col: int (0-127)` | Render text at page/column |
-| `update_oled_display(value_A, value_B)` | `value_A: int`, `value_B: int` | Clear screen, show "A: n" on page 0 and "B: n" on page 1 |
+| 函数 | 参数 | 说明 |
+|------|------|------|
+| `oled_init()` | — | 发送初始化序列，打开显示 |
+| `oled_clear()` | — | 向全部 8×128 像素写入 `0x00` |
+| `oled_show_text(text, page, start_col)` | `text: str`，`page: int (0-7)`，`start_col: int (0-127)` | 在指定页/列位置渲染文本 |
+| `update_oled_display(value_A, value_B)` | `value_A: int`，`value_B: int` | 清屏，在第 0 页显示 "A: n"，第 1 页显示 "B: n" |
 
-### 2. Image Recognition (KPU + AI2D)
+### 2. 图像识别（KPU + AI2D）
 
-**Pipeline**:
+**处理流水线**:
 
-1. **Capture**: `sensor.snapshot(chn=CAM_CHN_ID_2)` returns RGB888P image at 640×360
-2. **Preprocess** (AI2D hardware): Resize 640×360 → 224×224, NCHW format, bilinear interpolation
-3. **Inference** (KPU): Load `.kmodel`, set input tensor, run, get output tensors
-4. **Post-process**: Apply softmax (multi-class) or sigmoid (binary) activation, threshold by `confidence_threshold`
+1. **采集**: `sensor.snapshot(chn=CAM_CHN_ID_2)` 获取 640×360 的 RGB888P 图像
+2. **预处理**（AI2D 硬件）: 缩放 640×360 → 224×224，NCHW 格式，双线性插值
+3. **推理**（KPU）: 加载 `.kmodel`，设置输入张量，运行，获取输出张量
+4. **后处理**: 应用 softmax（多分类）或 sigmoid（二分类）激活函数，按 `confidence_threshold` 阈值过滤
 
-**Model format**: `.kmodel` (nncase v2.9.0 compiled), trained externally at Kendryte training platform.
+**模型格式**: `.kmodel`（nncase v2.9.0 编译），在 Kendryte 训练平台在线训练导出。
 
-**Post-processing logic**:
+**后处理逻辑**:
 
 ```
 if num_classes > 2:
-    softmax → argmax → check > confidence_threshold
+    softmax → argmax → 检查 > confidence_threshold
 else:
-    sigmoid → if > threshold: cls=1, else: cls=0
+    sigmoid → 若 > threshold: cls=1, 否则: cls=0
 ```
 
-If confidence is below threshold, `cls_idx = -1` (unrecognized).
+若置信度低于阈值，`cls_idx = -1`（未识别）。
 
-**Key parameters** (from `deploy_config.json`):
+**关键参数**（来自 `deploy_config.json`）：
 
-| Parameter | Typical Value | Description |
-|-----------|--------------|-------------|
-| `img_size` | `[224, 224]` | Model input resolution |
-| `confidence_threshold` | `0.5` | Minimum confidence for positive classification |
-| `num_classes` | `2` | Number of categories |
-| `categories` | `["class1", "class2"]` | Label names |
+| 参数 | 典型值 | 说明 |
+|------|--------|------|
+| `img_size` | `[224, 224]` | 模型输入分辨率 |
+| `confidence_threshold` | `0.5` | 判定为有效识别的最低置信度 |
+| `num_classes` | `2` | 分类类别数量 |
+| `categories` | `["class1", "class2"]` | 类别标签名称 |
 
-### 3. Matrix Keypad (4×4)
+### 3. 矩阵按键（4×4）
 
-**Scanning algorithm** (column strobe):
+**扫描算法**（列选通法）:
 
-1. Pull all 4 COL pins LOW
-2. Assert one COL HIGH at a time
-3. For each COL, check all 4 ROW pins
-4. If a ROW reads HIGH → key at `[row][col]` is pressed
+1. 将全部 4 个列引脚拉低
+2. 依次将一列拉高
+3. 每拉高一列，检测全部 4 个行引脚
+4. 若某行读到高电平 → `[row][col]` 位置的按键被按下
 
-**Debounce**: Record timestamp via `time.ticks_ms()`. Only register a keypress when the same key is detected twice with >50ms interval, and the key was not already in the "pressed" state.
+**防抖**: 通过 `time.ticks_ms()` 记录时间戳。仅当同一按键间隔 >50ms 被两次检测到，且该按键未处于 "已按下" 状态时，才确认一次有效按键。
 
-**Key mapping**:
+**按键映射**:
 
 | | COL1 | COL2 | COL3 | COL4 |
 |---|------|------|------|------|
@@ -188,113 +190,113 @@ If confidence is below threshold, `cls_idx = -1` (unrecognized).
 | **ROW3** | 9 | 10 | 11 | 12 |
 | **ROW4** | 13 | 14 | 15 | 16 |
 
-**Business logic**: Keys 1-5 increment the current category's count by their value (1-5), Key 6 resets to 0. Which category (A or B) is updated depends on the most recent classification result (`cls_idx`).
+**业务逻辑**: 按键 1-5 按对应数值增加当前类别的计数，按键 6 清零。更新 A 还是 B 取决于最近一次分类结果（`cls_idx`）。
 
-### 4. LED Control
+### 4. LED 控制
 
-Simple GPIO output control driven by classification result:
+由分类结果驱动的简单 GPIO 输出控制：
 
-| `cls_idx` | LED1 (GPIO 42) | LED2 (GPIO 6) | Meaning |
-|-----------|----------------|---------------|---------|
-| 0 (class1) | ON | OFF | Category A detected |
-| 1 (class2) | OFF | ON | Category B detected |
-| -1 (unknown) | OFF | OFF | No confident detection |
+| `cls_idx` | LED1（GPIO 42） | LED2（GPIO 6） | 含义 |
+|-----------|-----------------|----------------|------|
+| 0（class1） | 亮 | 灭 | 检测到 A 类 |
+| 1（class2） | 灭 | 亮 | 检测到 B 类 |
+| -1（未知） | 灭 | 灭 | 无有效识别 |
 
-LEDs only update when `cls_idx` changes (`cls_idx != last_class`) to avoid redundant GPIO writes.
+LED 仅在 `cls_idx` 变化时更新（`cls_idx != last_class`），避免冗余 GPIO 写入。
 
 ---
 
-## Main System Loop
+## 主系统循环
 
-### State Machine
+### 状态机
 
 ```
-                    ┌─────────────┐
-                    │   STARTUP   │
-                    │ OLED / LED  │
-                    │ KPU / Cam   │
-                    │ Keypad init │
-                    └──────┬──────┘
+                    ┌──────────────┐
+                    │   启动初始化   │
+                    │ OLED / LED   │
+                    │ KPU / 摄像头  │
+                    │ 按键初始化    │
+                    └──────┬───────┘
                            │
                            ▼
                  ┌──────────────────┐
-          ┌─────│   IDLE (loop)    │◀──────────────┐
+          ┌─────│   空闲循环        │◀──────────────┐
           │     └────────┬─────────┘               │
           │              │                          │
           │     ┌───────┴───────┐                  │
           │     │               │                  │
           │     ▼               ▼                  │
           │ ┌────────┐  ┌──────────────┐          │
-          │ │ KEY    │  │ CAMERA       │          │
-          │ │ SCAN   │  │ CAPTURE      │          │
+          │ │ 按键   │  │ 摄像头       │          │
+          │ │ 扫描   │  │ 图像采集     │          │
           │ └───┬────┘  └──────┬───────┘          │
           │     │              │                   │
           │     ▼              ▼                   │
           │ ┌────────┐  ┌──────────────┐          │
-          │ │ DEBOUNCE│  │ AI2D + KPU   │          │
-          │ │ (50ms)  │  │ INFERENCE    │          │
+          │ │ 防抖   │  │ AI2D + KPU   │          │
+          │ │(50ms)  │  │ 推理         │          │
           │ └───┬────┘  └──────┬───────┘          │
           │     │              │                   │
           │     ▼              ▼                   │
           │ ┌────────┐  ┌──────────────┐          │
-          │ │ UPDATE │  │ POST-PROCESS │          │
+          │ │ 更新   │  │ 后处理       │          │
           │ │ A / B  │  │ (softmax/    │          │
-          │ │ VALUE  │  │  sigmoid)    │          │
+          │ │ 数值   │  │  sigmoid)    │          │
           │ └───┬────┘  └──────┬───────┘          │
           │     │              │                   │
           │     ▼              ▼                   │
           │ ┌────────┐  ┌──────────────┐          │
-          │ │ OLED   │  │ LED CONTROL  │          │
-          │ │ REFRESH│  │ (if changed) │          │
+          │ │ OLED   │  │ LED 控制     │          │
+          │ │ 刷新   │  │ (仅变化时)    │          │
           │ └───┬────┘  └──────┬───────┘          │
           │     │              │                   │
           │     ▼              ▼                   │
           │ ┌─────────────────────────────┐       │
-          │ │   LCD OSD UPDATE            │       │
-          │ │   (result / conf / A B)     │       │
+          │ │   LCD OSD 更新              │       │
+          │ │   (结果 / 置信度 / A B)      │       │
           │ └──────────────┬──────────────┘       │
           │                │                      │
           │                ▼                      │
           │ ┌─────────────────────────────┐       │
           │ │   gc.collect()              │       │
-          │ │   (memory cleanup)          │───────┘
+          │ │   (内存回收)                 │───────┘
           │ └─────────────────────────────┘
           │
           ▼
     ┌──────────┐
-    │ SHUTDOWN │  (Ctrl+C / exception)
-    │ camera   │
-    │ display  │
-    │ LED off  │
-    │ OLED off │
+    │ 安全退出  │  (Ctrl+C / 异常)
+    │ 关闭摄像头 │
+    │ 释放显示器 │
+    │ 关闭 LED  │
+    │ 清空 OLED │
     └──────────┘
 ```
 
-### Error Handling
+### 异常处理
 
-| Exception | Behavior |
-|-----------|----------|
-| `deploy_config.json` not found or invalid JSON | Print error, `return` from `main()` |
-| `KeyboardInterrupt` (Ctrl+C) | Print message, enter `finally` cleanup |
-| Runtime exception (any) | Print traceback, enter `finally` cleanup |
-| Image capture returns `None` or wrong format | Skip inference for this cycle |
+| 异常 | 处理方式 |
+|------|----------|
+| `deploy_config.json` 不存在或 JSON 格式错误 | 打印错误，`return` 退出 `main()` |
+| `KeyboardInterrupt`（Ctrl+C） | 打印提示，进入 `finally` 清理 |
+| 运行时异常（任意） | 打印错误信息，进入 `finally` 清理 |
+| 图像采集返回 `None` 或格式不符 | 跳过本轮推理 |
 
-### Cleanup Sequence (finally block)
+### 清理流程（finally 块）
 
-1. Delete AI2D input/output tensors (if allocated)
-2. `sensor.stop()` — stop camera streaming
-3. `Display.deinit()` — release LCD display
-4. `MediaManager.deinit()` — release media subsystem
-5. `control_leds(-1)` — turn both LEDs off
-6. `oled_clear()` — clear OLED screen
+1. 删除 AI2D 输入/输出张量（如已分配）
+2. `sensor.stop()` — 停止摄像头流
+3. `Display.deinit()` — 释放 LCD 显示器
+4. `MediaManager.deinit()` — 释放媒体子系统
+5. `control_leds(-1)` — 关闭两颗 LED
+6. `oled_clear()` — 清空 OLED 屏幕
 
 ---
 
-## Configuration Reference
+## 配置参考
 
 ### deploy_config.json
 
-Located at `/sdcard/mp_deployment_source/deploy_config.json`. Generated by the Kendryte training platform.
+位于 `/sdcard/mp_deployment_source/deploy_config.json`，由 Kendryte 训练平台生成。
 
 ```json
 {
@@ -313,29 +315,29 @@ Located at `/sdcard/mp_deployment_source/deploy_config.json`. Generated by the K
 }
 ```
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `chip_type` | string | Target chip, always `"k230"` |
-| `inference_width` | int | Model input width (px) |
-| `inference_height` | int | Model input height (px) |
-| `confidence_threshold` | float | 0.0–1.0, minimum confidence for positive result |
-| `nncase_version` | string | nncase compiler version used |
-| `model_type` | string | Model architecture type |
-| `img_size` | `[int, int]` | `[width, height]` of model input |
-| `mean` | `[float, float, float]` | Per-channel normalization mean (RGB) |
-| `std` | `[float, float, float]` | Per-channel normalization std (RGB) |
-| `categories` | `[string, ...]` | Class label names, index matches model output |
-| `kmodel_path` | string | `.kmodel` filename (relative to config dir) |
-| `num_classes` | int | Number of output classes |
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `chip_type` | string | 目标芯片，固定为 `"k230"` |
+| `inference_width` | int | 模型输入宽度（像素） |
+| `inference_height` | int | 模型输入高度（像素） |
+| `confidence_threshold` | float | 0.0–1.0，判定为有效识别的最低置信度 |
+| `nncase_version` | string | 使用的 nncase 编译器版本 |
+| `model_type` | string | 模型架构类型 |
+| `img_size` | `[int, int]` | 模型输入的 `[width, height]` |
+| `mean` | `[float, float, float]` | 逐通道归一化均值（RGB） |
+| `std` | `[float, float, float]` | 逐通道归一化标准差（RGB） |
+| `categories` | `[string, ...]` | 类别标签名称，索引对应模型输出 |
+| `kmodel_path` | string | `.kmodel` 文件名（相对 config 所在目录） |
+| `num_classes` | int | 输出类别数量 |
 
 ---
 
-## Memory Management
+## 内存管理
 
-The K230 has limited RAM. The main loop takes these measures:
+K230  RAM 有限，主循环采取以下策略：
 
-- **Reuse tensors**: `ai2d_input_tensor` and `ai2d_output_tensor` are allocated once before the loop and reused
-- **Explicit delete**: After reading KPU output, `del output_data` immediately frees the tensor reference
-- **Nullify references**: `rgb888p_img = None` at end of each loop iteration to allow GC
-- **Periodic GC**: `gc.collect()` called every loop iteration to reclaim short-lived MicroPython objects
-- **Single OSD image**: `osd_img` is allocated once (800×480×4 = ~1.5MB ARGB8888) and cleared with `.clear()` rather than reallocated
+- **张量复用**: `ai2d_input_tensor` 和 `ai2d_output_tensor` 在循环外分配一次，循环内复用
+- **显式释放**: 读取 KPU 输出后立即 `del output_data` 释放张量引用
+- **引用置空**: 每轮循环末尾 `rgb888p_img = None`，便于 GC 回收
+- **定期 GC**: 每轮循环调用 `gc.collect()` 回收 MicroPython 短生命周期对象
+- **单例 OSD 图像**: `osd_img` 仅分配一次（800×480×4 ≈ 1.5MB ARGB8888），通过 `.clear()` 刷新而非重新分配

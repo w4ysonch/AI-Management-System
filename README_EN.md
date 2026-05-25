@@ -38,7 +38,7 @@ main.py
 └── Main System Loop     # Main loop scheduling + error handling
 ```
 
-- **Technical Docs**: See [TECHNICAL.md](docs/TECHNICAL.md) — pin mapping, data flow, state machine, config format
+- **Technical Docs**: See [TECHNICAL_EN.md](docs/TECHNICAL_EN.md) — pin mapping, data flow, state machine, config format
 - **AI Model**: Image classification model trained at [Kendryte Training Platform](https://www.kendryte.com/zh/training/start), exported as `.kmodel` for K230 KPU
 - **Inference Engine**: nncase v2.9.0 runtime
 - **Image Preprocessing**: AI2D hardware-accelerated scaling & format conversion
@@ -59,7 +59,8 @@ AI-Management-System/
 │   ├── deploy_config.json       #   Model deployment config
 │   └── *.kmodel                 #   KPU model file
 ├── docs/
-│   ├── TECHNICAL.md             #  Technical reference (pin mapping, data flow, state machine)
+│   ├── TECHNICAL.md             #  技术参考文档 (Chinese)
+│   ├── TECHNICAL_EN.md          #  Technical reference (pin mapping, data flow, state machine)
 │   ├── project_report.pdf       #  Contest report
 │   └── release-notes/           #  Release notes
 └── test2.zip                     # Model training deployment package (offline)
