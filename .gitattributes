@@ -1,0 +1,17 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Python source files
+*.py text eol=lf
+
+# Documentation
+*.md text
+*.txt text
+
+# Binary files
+*.kmodel binary
+*.zip binary
+*.rar binary
+*.pdf binary
+*.png binary
+*.jpg binary
