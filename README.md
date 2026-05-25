@@ -55,15 +55,11 @@ AI-Management-System/
 ├── src/
 │   ├── main.py                   # 主程序（含所有模块）
 │   └── i2c_ssd1306.py           # SSD1306 OLED 驱动
-├── mp_deployment_source/         # MicroPython 部署资源
-│   ├── deploy_config.json       #   模型部署配置
-│   └── *.kmodel                 #   KPU 模型文件
 ├── docs/
 │   ├── TECHNICAL.md             #  技术参考文档（引脚映射、数据流、状态机）
 │   ├── TECHNICAL_EN.md          #  Technical reference (English)
-│   ├── 项目报告.pdf              #  竞赛报告
+│   ├── project_report.pdf       #  竞赛报告
 │   └── release-notes/           #  版本发布说明
-└── test2.zip                     # 模型训练部署包（离线资源）
 ```
 
 ## 运行方式

@@ -43,6 +43,7 @@ test2/
 *.jpg
 *.png
 *.pdf
+!docs/project_report.pdf
 
 # ============================================
 # Deployment output (only needed in Release)

@@ -55,15 +55,11 @@ AI-Management-System/
 ├── src/
 │   ├── main.py                   # Main program (all modules)
 │   └── i2c_ssd1306.py           # SSD1306 OLED driver
-├── mp_deployment_source/         # MicroPython deployment resources
-│   ├── deploy_config.json       #   Model deployment config
-│   └── *.kmodel                 #   KPU model file
 ├── docs/
 │   ├── TECHNICAL.md             #  技术参考文档 (Chinese)
 │   ├── TECHNICAL_EN.md          #  Technical reference (pin mapping, data flow, state machine)
 │   ├── project_report.pdf       #  Contest report
 │   └── release-notes/           #  Release notes
-└── test2.zip                     # Model training deployment package (offline)
 ```
 
 ## Getting Started
