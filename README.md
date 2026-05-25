@@ -1,6 +1,6 @@
 # AI Management System / 智能货架管理系统
 
-> 基于嘉楠 K230 (RT-Thread Smart) 的 AI 智能货架管理系统。通过摄像头 + NPU 图像分类识别货架商品，4×4 矩阵按键管理库存数量，OLED 显示 A/B 类商品计数，LED 指示分类结果。获全国大学生嵌入式竞赛**省三等奖**。
+> 基于嘉楠 K230 (RT-Thread Smart) 的 AI 智能货架管理系统。通过摄像头 + NPU 图像分类识别货架商品，4×4 矩阵按键管理库存数量，OLED 显示 A/B 类商品计数，LED 指示分类结果。
 
 **[English →](README_EN.md)**
 

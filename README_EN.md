@@ -1,6 +1,6 @@
 # AI Management System
 
-> An AI-powered smart shelf management system based on Canaan K230 (RT-Thread Smart). Uses camera + NPU for real-time image classification of shelf products, 4×4 matrix keypad for inventory management, OLED for count display, and LEDs for classification indication. Won **Provincial 3rd Prize** in the National Embedded Design Competition.
+> An AI-powered smart shelf management system based on Canaan K230 (RT-Thread Smart). Uses camera + NPU for real-time image classification of shelf products, 4×4 matrix keypad for inventory management, OLED for count display, and LEDs for classification indication.
 
 **[中文 →](README.md)**
 
